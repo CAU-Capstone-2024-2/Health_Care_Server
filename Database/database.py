@@ -1,8 +1,8 @@
-# database.py
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, declarative_base
 TEMP_URL = "mysql+mysqlconnector://rocknroll:rocknroll@localhost:3306/"
 DATABASE_URL = "mysql+mysqlconnector://rocknroll:rocknroll@localhost:3306/capstone"
+
 temp_engine = create_engine(TEMP_URL)
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
