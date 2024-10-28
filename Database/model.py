@@ -18,7 +18,7 @@ class BaseEntity(Base):
 
 class Chat(BaseEntity):
     __tablename__ = "chat"
-    id = Column(String(65), primary_key = True, default = hash_id)
+    id = Column(Integer, index = True, autoincrement = True, primary_key = True)
     uid = Column(String(255), index=True)
     isuser = Column(Boolean)
-    utterance = Column(String(255))
+    utterance = Column(String(600))

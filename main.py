@@ -1,7 +1,7 @@
 import sys
 import os
 import time
-sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+#sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from Database.database import db
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
@@ -13,8 +13,10 @@ from dotenv import load_dotenv
 from Router import ask
 create_database()
 
-load_dotenv("../.env")
+load_dotenv(".env")
 secret = os.getenv("secret")
+AI_SERVER_URL = os.getenv("AI_SERVER_URL")
+FRONTEND_SERVER_URL = os.getenv("FRONTEND_SERVER_URL")
 
 # 스웨거 예시 표시
 SWAGGER_HEADERS = {
@@ -46,7 +48,7 @@ app.include_router(ask.router)
 
 
 # CORS
-origins = [ "*" ]
+origins = [ FRONTEND_SERVER_URL, AI_SERVER_URL]
 
 app.add_middleware(
     CORSMiddleware,
@@ -57,4 +59,4 @@ app.add_middleware(
 )
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=1500, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=1500, workers=10)

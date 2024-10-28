@@ -1,7 +1,13 @@
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, declarative_base
-TEMP_URL = "mysql+mysqlconnector://rocknroll:rocknroll@localhost:3306/"
-DATABASE_URL = "mysql+mysqlconnector://rocknroll:rocknroll@localhost:3306/capstone"
+from dotenv import load_dotenv
+import os
+
+load_dotenv(".env")
+DB_USERNAME=os.getenv("DB_USERNAME")
+DB_PASSWORD=os.getenv("DB_PASSWORD")
+TEMP_URL = f"mysql+mysqlconnector://{DB_USERNAME}:{DB_PASSWORD}@localhost:3306/"
+DATABASE_URL = f"mysql+mysqlconnector://{DB_USERNAME}:{DB_PASSWORD}@localhost:3306/capstone"
 
 temp_engine = create_engine(TEMP_URL)
 engine = create_engine(DATABASE_URL)
