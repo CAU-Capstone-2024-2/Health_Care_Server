@@ -5,10 +5,13 @@ class TransactionService:
 
     #sess
     def to_question_entity(question:QuestionData):
-        return Chat(utterance=question.utterance, uid = question.uid, isuser=True)
+        return Chat(utterance=question.question, uid = question.uid, isuser=True)
     
     def to_answer_entity(answer:AnswerData):
-        return Chat(utterance=answer.answer, uid = answer.uid, isuser=False)
+        if answer.clarifying_questions is not None:
+            return Chat(utterance=str(answer.clarifying_questions), uid = answer.uid, isuser=False)
+        elif answer.answer is not None:
+            return Chat(utterance=str(answer.answer), uid = answer.uid, isuser=False)
     
     # def to_question_data(question:Chat):
     #     return QuestionData(uid=question.uid, utterance=question.utterance, created_at=question.created_at)
