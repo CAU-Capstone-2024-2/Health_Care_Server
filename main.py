@@ -2,15 +2,17 @@ import sys
 import os
 import time
 #sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-from Database.database import db
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 from starlette.status import *
+import schedule
+from threading import Thread
 import uvicorn
 from Database.database import create_database, engine
 from starlette.middleware.sessions import SessionMiddleware
 from dotenv import load_dotenv
 from Router import ask
+from Service.chat_migrator import Migrator
 create_database()
 
 load_dotenv(".env")
@@ -59,4 +61,19 @@ app.add_middleware(
 )
 
 if __name__ == "__main__":
+    migrator = Migrator()
+
+    def run_scheduler():
+        while True:
+            schedule.run_pending()
+            time.sleep(1)
+
+    # 매 10분마다 get_all_uid 실행
+    schedule.every(5).seconds.do(migrator.migrate)
+    #schedule.every(10).minutes.do(migrator.migrate)
+
+    # 스케줄러를 별도의 스레드에서 실행
+    scheduler_thread = Thread(target=run_scheduler)
+    scheduler_thread.daemon = True
+    scheduler_thread.start()
     uvicorn.run("main:app", host="0.0.0.0", port=1500, workers=10)
