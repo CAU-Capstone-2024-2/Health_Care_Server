@@ -18,10 +18,10 @@ AI_SERVER_URL = os.getenv("AI_SERVER_URL")
 FRONTEND_SERVER_URL = os.getenv("FRONTEND_SERVER_URL")
 
 @router.post("/ask", tags=["ask"])
-async def ask(request: Request, question: QuestionData, db: Session = Depends(get_db)):
+async def ask(request: Request, question: QuestionData):
     try:
         # 대화 저장 코드
-        TransactionService.save_chat(db, TransactionService.to_question_entity(question))
+        TransactionService.save_chat(TransactionService.to_question_entity(question))
         print(question.model_dump())
         response = requests.post(AI_SERVER_URL+"/qsmaker", json=question.model_dump())
         print(response.json())
@@ -33,15 +33,16 @@ async def ask(request: Request, question: QuestionData, db: Session = Depends(ge
         return JSONResponse(status_code=HTTP_400_BAD_REQUEST, content={"message": str(e)})
     
 @router.post("/answer", tags=["answer"])
-async def answer(request: Request, answer: AnswerData, db: Session = Depends(get_db)):
+async def answer(request: Request, answer: AnswerData):
     try:
-        TransactionService.save_chat(db, TransactionService.to_answer_entity(answer))
+        TransactionService.save_chat(TransactionService.to_answer_entity(answer))
         if answer.clarifying_questions is not None:
             print(answer.clarifying_questions)
             entity = TransactionService.to_answer_entity(answer)
             entity.isuser = True
             entity.utterance = str(ast.literal_eval(entity.utterance)[0])
-            TransactionService.save_chat(db, entity)
+            entity.type = "c"
+            TransactionService.save_chat(entity)
             response = requests.post(AI_SERVER_URL+"/ask", json=QuestionData(uid=answer.uid, question=answer.clarifying_questions[0], sessionId=answer.sessionId).model_dump())
             return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
         print(answer.answer)
@@ -52,7 +53,7 @@ async def answer(request: Request, answer: AnswerData, db: Session = Depends(get
         return JSONResponse(status_code=HTTP_400_BAD_REQUEST, content={"message": str(e)})
 
 @router.get("/test")
-async def test(db: requests.Session = Depends(get_db)):
-    temp = TransactionService.get_chat_by_uid(db, "test")
+async def test():
+    temp = TransactionService.get_chat_by_uid("test")
     print([(i.utterance, i.created_at) for i in temp])
     return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
