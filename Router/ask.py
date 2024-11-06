@@ -63,7 +63,7 @@ async def answer(request: Request, answer: AnswerData, background_tasks: Backgro
         return JSONResponse(status_code=HTTP_400_BAD_REQUEST, content={"message": str(e)})
 
 def send_choice_to_frontend_server(question: QuestionData):
-    requests.post(FRONTEND_SERVER_URL + "/kakao/callback-response/list-cards", json=question.model_dump())
+    requests.post(FRONTEND_SERVER_URL + "/kakao/callback-response/list-card", json=question.model_dump())
 
 def send_answer_to_frontend_server(answer: AnswerData):
     requests.post(FRONTEND_SERVER_URL+"/kakao/callback-response/poster", json=answer.model_dump())
