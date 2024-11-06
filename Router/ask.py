@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from fastapi import Request
 import requests
 from Service.transaction_service import TransactionService
+from Service.user_service import UserService
 from sqlalchemy.orm import Session
 import ast
 
@@ -21,8 +22,8 @@ FRONTEND_SERVER_URL = os.getenv("FRONTEND_SERVER_URL")
 async def ask(request: Request, question: QuestionData, background_tasks: BackgroundTasks):
     try:
         # 대화 저장 코드
-        TransactionService.save_chat(TransactionService.to_question_entity(question))
-        print(question.model_dump())
+        if UserService.get_user(question.uid) is None:
+            UserService.save_user(UserService.to_user_entity(question.uid))
         if question.is_from_list:
             last_chat = TransactionService.find_last_chat_by_uid(question.uid)
             if last_chat is None:
@@ -35,6 +36,8 @@ async def ask(request: Request, question: QuestionData, background_tasks: Backgr
                 pass
             background_tasks.add_task(send_request_to_ai_server, question)
             return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
+        TransactionService.save_chat(TransactionService.to_question_entity(question))
+        print(question.model_dump())
         background_tasks.add_task(send_request_to_ai_server, question)
         # response_text = response.json()
         # TransactionService.save_chat(db, TransactionService.to_answer_entity(AnswerData(sessionId=question.sessionId, uid=question.uid, answer=response_text["answer"])))

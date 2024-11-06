@@ -16,6 +16,11 @@ class BaseEntity(Base):
     created_at = Column(DateTime, default = datetime.now)
     updated_at = Column(DateTime, default = datetime.now, onupdate = datetime.now)
 
+class User(BaseEntity):
+    __tablename__ = "user"
+    uid = Column(String(255), index = True, primary_key = True)
+    period = Column(Integer, nullable=True)
+
 class BasicChat(BaseEntity):
     __abstract__ = True
     id = Column(Integer, index = True, autoincrement = True, primary_key = True)
