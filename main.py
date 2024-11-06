@@ -11,7 +11,7 @@ import uvicorn
 from Database.database import create_database, engine
 from starlette.middleware.sessions import SessionMiddleware
 from dotenv import load_dotenv
-from Router import ask
+from Router import ask, user
 from Service.chat_migrator import Migrator
 create_database()
 
@@ -47,6 +47,7 @@ app = FastAPI(
 )
 
 app.include_router(ask.router)
+app.include_router(user.router)
 
 
 # CORS
