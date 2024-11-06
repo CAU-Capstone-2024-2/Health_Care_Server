@@ -41,8 +41,6 @@ async def ask(request: Request, question: QuestionData, background_tasks: Backgr
         TransactionService.save_chat(TransactionService.to_question_entity(question))
         print(question.model_dump())
         background_tasks.add_task(send_request_to_ai_server, question)
-        # response_text = response.json()
-        # TransactionService.save_chat(db, TransactionService.to_answer_entity(AnswerData(sessionId=question.sessionId, uid=question.uid, answer=response_text["answer"])))
         return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
     except Exception as e:
         raise e
