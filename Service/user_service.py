@@ -4,11 +4,11 @@ class UserService:
     def to_user_entity(uid):
         return User(uid=uid)
 
-    def get_user(self, uid):
+    def get_user(uid):
         with get_db() as db:
             return db.query(User).filter(User.uid == uid).first()
         
-    def save_user(self, user):
+    def save_user(user):
         with get_db() as db:
             try:
                 db.add(user)
