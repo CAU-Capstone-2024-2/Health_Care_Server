@@ -18,7 +18,8 @@ load_dotenv(".env")
 @router.post("/config")
 async def config(request: Request):
     try:
-        print(request.json())
+        data = await request.json()
+        print(data)
         return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
     except Exception as e:
         raise e
