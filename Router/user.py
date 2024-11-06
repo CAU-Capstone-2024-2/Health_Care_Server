@@ -19,6 +19,8 @@ load_dotenv(".env")
 async def config(request: Request):
     try:
         data = await request.json()
+        user_id = data['bot']['userRequest']['user']['id']
+        period = data['bot']['action']['clientExtra']['period']
         print(data)
         return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
     except Exception as e:
