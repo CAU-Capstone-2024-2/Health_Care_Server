@@ -34,7 +34,7 @@ async def ask(request: Request, question: QuestionData, background_tasks: Backgr
             else:
                 # 이건 리스트에 있었지만 현재 대화에는 없는 경우
                 pass
-            background_tasks.add_task(send_request_to_ai_server, question)
+            background_tasks.add_task(send_choice_to_ai_server, question)
             return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
         TransactionService.save_chat(TransactionService.to_question_entity(question))
         print(question.model_dump())
@@ -48,6 +48,10 @@ async def ask(request: Request, question: QuestionData, background_tasks: Backgr
     
 def send_request_to_ai_server(question: QuestionData):
     response = requests.post(AI_SERVER_URL + "/qsmaker", json=question.model_dump())
+    print(response.json())
+
+def send_choice_to_ai_server(question: QuestionData):
+    response = requests.post(AI_SERVER_URL + "/ask", json=question.model_dump())
     print(response.json())
     
 @router.post("/answer", tags=["answer"])

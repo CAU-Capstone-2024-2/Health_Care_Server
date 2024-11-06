@@ -16,3 +16,10 @@ class UserService:
             except Exception as e:
                 db.rollback()
                 raise e
+            
+    def change_config(uid, period):
+        with get_db() as db:
+            user = db.query(User).filter(User.uid == uid).first()
+            user.period = period
+            db.commit()
+        return True
