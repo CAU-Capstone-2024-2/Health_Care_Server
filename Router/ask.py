@@ -24,7 +24,9 @@ async def ask(request: Request, question: QuestionData, background_tasks: Backgr
         # 대화 저장 코드
         if UserService.get_user(question.uid) is None:
             UserService.save_user(UserService.to_user_entity(question.uid))
-        if question.is_from_list:
+        last_chat = TransactionService.find_last_chat_by_uid(question.uid)
+        # if question.is_from_list:
+        if last_Chat is not None and question.question in last_chat[-1].utterance:
             last_chat = TransactionService.find_last_chat_by_uid(question.uid)
             if last_chat is None:
                 TransactionService.save_chat(TransactionService.to_question_entity_c(question))
