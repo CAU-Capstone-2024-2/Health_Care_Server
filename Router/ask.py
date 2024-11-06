@@ -53,12 +53,7 @@ async def answer(request: Request, answer: AnswerData, background_tasks: Backgro
         TransactionService.save_chat(TransactionService.to_answer_entity(answer))
         if answer.clarifying_questions is not None:
             print(answer.clarifying_questions)
-            entity = TransactionService.to_answer_entity(answer)
-            entity.isuser = True
-            entity.utterance = str(ast.literal_eval(entity.utterance)[0])
-            entity.type = "c"
-            TransactionService.save_chat(entity)
-            background_tasks.add_task(send_choice_to_frontend_server, QuestionData(uid=answer.uid, question=answer.clarifying_questions[0], sessionId=answer.sessionId))
+            background_tasks.add_task(send_choice_to_frontend_server, QuestionData(uid=answer.uid, question=str(answer.clarifying_questions), sessionId=answer.sessionId))
             return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
         print(answer.answer)
         background_tasks.add_task(send_answer_to_frontend_server, answer)
