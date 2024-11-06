@@ -4,6 +4,9 @@ class QuestionData(BaseModel):
     uid: str
     question: str
     sessionId: str
+    is_from_list: bool = None
+    not_found: bool = None
+
     
 class QuestionDataServer(BaseModel):
     uid: str

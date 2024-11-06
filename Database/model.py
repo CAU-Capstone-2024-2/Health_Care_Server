@@ -19,6 +19,7 @@ class BaseEntity(Base):
 class BasicChat(BaseEntity):
     __abstract__ = True
     id = Column(Integer, index = True, autoincrement = True, primary_key = True)
+    sessionId = Column(String(255), index = True)
     uid = Column(String(255), index=True)
     isuser = Column(Boolean)
     utterance = Column(String(600))
@@ -30,6 +31,7 @@ class Chat(BasicChat):
 class CompleteChat(BasicChat):
     __tablename__ = "complete_chat"
     def __init__(self, chat: Chat):
+        self.sessionId = chat.sessionId
         self.uid = chat.uid
         self.isuser = chat.isuser
         self.utterance = chat.utterance

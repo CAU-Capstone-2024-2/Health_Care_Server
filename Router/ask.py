@@ -23,6 +23,18 @@ async def ask(request: Request, question: QuestionData, background_tasks: Backgr
         # 대화 저장 코드
         TransactionService.save_chat(TransactionService.to_question_entity(question))
         print(question.model_dump())
+        if question.is_from_list:
+            last_chat = TransactionService.find_last_chat_by_uid(question.uid)
+            if last_chat is None:
+                TransactionService.save_chat(TransactionService.to_question_entity_c(question))
+            elif last_chat.type == 's' and question.question in last_chat.utterance:
+                # 채팅을 C로 저장하고 AI한테 넘기기
+                TransactionService.save_chat(TransactionService.to_question_entity_c(question))
+            else:
+                # 이건 리스트에 있었지만 현재 대화에는 없는 경우
+                pass
+            background_tasks.add_task(send_request_to_ai_server, question)
+            return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
         background_tasks.add_task(send_request_to_ai_server, question)
         # response_text = response.json()
         # TransactionService.save_chat(db, TransactionService.to_answer_entity(AnswerData(sessionId=question.sessionId, uid=question.uid, answer=response_text["answer"])))
@@ -46,7 +58,7 @@ async def answer(request: Request, answer: AnswerData, background_tasks: Backgro
             entity.utterance = str(ast.literal_eval(entity.utterance)[0])
             entity.type = "c"
             TransactionService.save_chat(entity)
-            background_tasks.add_task(send_choice_to_ai_server, QuestionData(uid=answer.uid, question=answer.clarifying_questions[0], sessionId=answer.sessionId))
+            background_tasks.add_task(send_choice_to_frontend_server, QuestionData(uid=answer.uid, question=answer.clarifying_questions[0], sessionId=answer.sessionId))
             return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
         print(answer.answer)
         background_tasks.add_task(send_answer_to_frontend_server, answer)
@@ -55,8 +67,8 @@ async def answer(request: Request, answer: AnswerData, background_tasks: Backgro
         raise e
         return JSONResponse(status_code=HTTP_400_BAD_REQUEST, content={"message": str(e)})
 
-def send_choice_to_ai_server(question: QuestionData):
-    requests.post(AI_SERVER_URL + "/ask", json=question.model_dump())
+def send_choice_to_frontend_server(question: QuestionData):
+    requests.post(FRONTEND_SERVER_URL + "/kakao/callback-response/list-cards", json=question.model_dump())
 
 def send_answer_to_frontend_server(answer: AnswerData):
     requests.post(FRONTEND_SERVER_URL+"/kakao/callback-response/poster", json=answer.model_dump())

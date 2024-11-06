@@ -8,7 +8,7 @@ import re
 
 class Migrator:
     def __init__(self):
-        self.rule = re.compile(r"((qs)+ca)+")
+        self.rule = re.compile(r"(((qs)+ca)|(ca))+")
 
     def migrate(self):
         uids = self.get_all_uid()
