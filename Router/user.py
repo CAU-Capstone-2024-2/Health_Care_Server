@@ -21,7 +21,7 @@ async def config(request: Request):
         data = await request.json()
         user_id = data['userRequest']['user']['id']
         period = data['action']['clientExtra']['period']
-        print(data)
+        print(user_id, period)
         return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
     except Exception as e:
         raise e
