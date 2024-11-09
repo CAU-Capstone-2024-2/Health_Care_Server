@@ -10,6 +10,8 @@ from Service.transaction_service import TransactionService
 from sqlalchemy.orm import Session
 import ast
 
+from Service.user_service import UserService
+
 router = APIRouter(prefix="/user", tags=["user"])
 
 load_dotenv(".env")
@@ -19,9 +21,9 @@ load_dotenv(".env")
 async def config(request: Request):
     try:
         data = await request.json()
-        user_id = data['userRequest']['user']['id']
+        uid = data['userRequest']['user']['id']
         period = data['action']['clientExtra']['period']
-        print(user_id, period)
+        UserService.change_config(uid, period)
         return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
     except Exception as e:
         raise e
