@@ -34,9 +34,9 @@ class UserService:
             db.commit()
             return user.form_id
     
-    def remove_form(user_id):
+    def remove_form(form_id):
         with get_db() as db:
-            user = db.query(User).filter(User.uid == user_id).first()
+            user = db.query(User).filter(User.form_id == form_id).first()
             user.form_id = None
             db.commit()
         return True
