@@ -24,20 +24,14 @@ async def ask(request: Request, question: QuestionData, background_tasks: Backgr
         # 대화 저장 코드
         if UserService.get_user(question.uid) is None:
             UserService.save_user(UserService.to_user_entity(question.uid))
-        last_chat = TransactionService.find_last_chat_by_uid(question.uid)
-        # if question.is_from_list:
-        if question.is_from_list and last_chat is not None and question.question in last_chat.utterance:
-            last_chat = TransactionService.find_last_chat_by_uid(question.uid)
-            if last_chat is None:
-                TransactionService.save_chat(TransactionService.to_question_entity_c(question))
-            elif last_chat.type == 's' and question.question in last_chat.utterance:
-                # 채팅을 C로 저장하고 AI한테 넘기기
-                TransactionService.save_chat(TransactionService.to_question_entity_c(question))
-            else:
-                # 이건 리스트에 있었지만 현재 대화에는 없는 경우
-                pass
+        if question.is_from_list:
+            TransactionService.save_chat(TransactionService.to_question_entity_c(question))
             background_tasks.add_task(send_choice_to_ai_server, question)
             return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
+        # elif question.q_not_found:
+        #     TransactionService.save_chat(TransactionService.to_question_entity(question))
+        #     background_tasks.add_task(send_request_to_ai_server, question)
+        #     return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
         TransactionService.save_chat(TransactionService.to_question_entity(question))
         print(question.model_dump())
         background_tasks.add_task(send_request_to_ai_server, question)
