@@ -11,7 +11,7 @@ import uvicorn
 from Database.database import create_database, engine
 from starlette.middleware.sessions import SessionMiddleware
 from dotenv import load_dotenv
-from Router import ask, user
+from Router import ask, user, form
 from Service.chat_migrator import Migrator
 create_database()
 
@@ -26,9 +26,6 @@ SWAGGER_HEADERS = {
     "version": "1.0.0",
     "description": ""
     }
-
-
-
 
 # app = FastAPI()
 
@@ -48,6 +45,7 @@ app = FastAPI(
 
 app.include_router(ask.router)
 app.include_router(user.router)
+app.include_router(form.router)
 
 
 # CORS
