@@ -58,9 +58,9 @@ class UserService:
             if user := db.query(User).filter(User.uid == uid).first():
                 user.name = name
                 user.age = age
-                if gender == '남성' or gender == 'M' or gender == 'm':
+                if gender == '남성' or gender == 'M' or gender == 'm' or gender == "male":
                     gender = 'M'
-                elif gender == '여성' or gender == 'F' or gender == 'f':
+                elif gender == '여성' or gender == 'F' or gender == 'f' or gender == "female":
                     gender = 'F'
                 user.gender = gender
                 user.disease = disease
