@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, BackgroundTasks
 from starlette.status import *
 import os
 from dotenv import load_dotenv
-from fastapi import Request
+from fastapi import Request, Form
 import requests
 from Service.transaction_service import TransactionService
 from sqlalchemy.orm import Session
@@ -28,7 +28,7 @@ async def create_form(request: Request):
             UserService.save_user(UserService.to_user_entity(uid))
         form_id = str(uuid.uuid4())
         form_id = UserService.create_form(uid, form_id)
-        url = BACKEND_SERVER_URL+"/form/write"+form_id
+        url = BACKEND_SERVER_URL+"/form/submit/"+form_id
         json_form = {
             "version": "2.0",
             "template": {
@@ -54,13 +54,22 @@ async def create_form(request: Request):
             }
         return JSONResponse(status_code=200, content=json_form)
     except Exception as e:
+        raise e
         return JSONResponse(status_code=500, content={"message": str(e)})
     
-@router.post("/submit{form_id}")
+@router.get("/submit/{form_id}")
 async def get_form(request: Request, form_id: str):
     try:
         if UserService.get_form(form_id):
             return templates.TemplateResponse("form.html", {"request": request, "form_id": form_id})
+        return JSONResponse(status_code=HTTP_404_NOT_FOUND, content={"message": "만료된 폼입니다."})
     except Exception as e:
         raise e
         return JSONResponse(status_code=HTTP_400_BAD_REQUEST, content={"message": str(e)})
+
+@router.post("/submit/{form_id}")
+async def submit_form(request: Request, form_id: str, name: str = Form(...), age: int = Form(...), gender: str = Form(...), disease: str = Form(None)):
+    UserService.remove_form(form_id)
+
+
+    return JSONResponse(status_code=200, content={"message": "success"})

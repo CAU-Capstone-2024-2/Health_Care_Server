@@ -32,7 +32,7 @@ class UserService:
             user = db.query(User).filter(User.uid == user_id).first()
             user.form_id = form_id
             db.commit()
-        return user.form_id
+            return user.form_id
     
     def remove_form(user_id):
         with get_db() as db:
