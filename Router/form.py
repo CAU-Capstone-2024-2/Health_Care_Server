@@ -54,7 +54,7 @@ async def create_form(request: Request):
             }
         return JSONResponse(status_code=200, content=json_form)
     except Exception as e:
-        raise JSONResponse(status_code=500, content={"message": str(e)})
+        return JSONResponse(status_code=500, content={"message": str(e)})
     
 @router.post("/submit{form_id}")
 async def get_form(request: Request, form_id: str):
