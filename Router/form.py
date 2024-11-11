@@ -38,7 +38,7 @@ async def create_form(request: Request):
                     "title": "사용자 정보 입력",
                     "description": "간단한 본인의 정보를 입력해주세요",
                     "thumbnail": {
-                        "imageUrl": "https://files.oaiusercontent.com/file-Pw29PPufbmCkto3ugOUb7Oua?se=2024-11-11T14%3A56%3A31Z&sp=r&sv=2024-08-04&sr=b&rscc=max-age%3D604800%2C%20immutable%2C%20private&rscd=attachment%3B%20filename%3Df2e82db8-84d4-4596-ad10-8eaa8ce0f0c4.webp&sig=gDA42HqSQSTn7gRCIDJL/HHm5kysCkOYak1isil%2BhE0%3D"
+                        "imageUrl": "https://i.ibb.co/M1kgbWT/f2e82db8-84d4-4596-ad10-8eaa8ce0f0c4-2.webp"
                     },
                     "buttons": [
                         {
