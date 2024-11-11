@@ -20,6 +20,7 @@ class User(BaseEntity):
     __tablename__ = "user"
     uid = Column(String(255), index = True, primary_key = True)
     period = Column(Integer, nullable=True)
+    form_id = Column(String(255), nullable=True)
 
 class BasicChat(BaseEntity):
     __abstract__ = True

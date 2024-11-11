@@ -26,3 +26,23 @@ class UserService:
                 user.period = period
             db.commit()
         return True
+    
+    def create_form(user_id, form_id):
+        with get_db() as db:
+            user = db.query(User).filter(User.uid == user_id).first()
+            user.form_id = form_id
+            db.commit()
+        return user.form_id
+    
+    def remove_form(user_id):
+        with get_db() as db:
+            user = db.query(User).filter(User.uid == user_id).first()
+            user.form_id = None
+            db.commit()
+        return True
+    
+    def get_form(form_id):
+        with get_db() as db:
+            if db.query(User).filter(User.form_id == form_id).first():
+                return True
+            return False
