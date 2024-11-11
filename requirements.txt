@@ -8,6 +8,7 @@ greenlet==3.1.1
 h11==0.14.0
 idna==3.10
 itsdangerous==2.2.0
+Jinja2==3.1.4
 mysql==0.0.3
 mysql-connector-python==9.0.0
 mysqlclient==2.2.4
