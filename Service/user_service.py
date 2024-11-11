@@ -20,6 +20,9 @@ class UserService:
     def change_config(uid, period):
         with get_db() as db:
             user = db.query(User).filter(User.uid == uid).first()
-            user.period = period
+            if period == 0:
+                user.period = None
+            else:
+                user.period = period
             db.commit()
         return True
