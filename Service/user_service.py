@@ -29,20 +29,41 @@ class UserService:
     
     def create_form(user_id, form_id):
         with get_db() as db:
-            user = db.query(User).filter(User.uid == user_id).first()
-            user.form_id = form_id
-            db.commit()
-            return user.form_id
+            if user := db.query(User).filter(User.uid == user_id).first():
+                user.form_id = form_id
+                db.commit()
+                return user.form_id
     
     def remove_form(form_id):
         with get_db() as db:
-            user = db.query(User).filter(User.form_id == form_id).first()
-            user.form_id = None
-            db.commit()
-        return True
+            if user := db.query(User).filter(User.form_id == form_id).first():
+                user.form_id = None
+                db.commit()
+            return True
     
     def get_form(form_id):
         with get_db() as db:
             if db.query(User).filter(User.form_id == form_id).first():
                 return True
             return False
+        
+    def get_user_by_form_id(form_id):
+        with get_db() as db:
+            if user := db.query(User).filter(User.form_id == form_id).first():
+                return user.uid
+            return None
+        
+    def save_user_info(uid, name, age, gender, disease):
+        with get_db() as db:
+            if user := db.query(User).filter(User.uid == uid).first():
+                user.name = name
+                user.age = age
+                if gender == '남성' or gender == 'M' or gender == 'm':
+                    gender = 'M'
+                elif gender == '여성' or gender == 'F' or gender == 'f':
+                    gender = 'F'
+                user.gender = gender
+                user.disease = disease
+                db.commit()
+            return True
+        

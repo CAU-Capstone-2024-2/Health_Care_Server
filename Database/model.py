@@ -21,6 +21,11 @@ class User(BaseEntity):
     uid = Column(String(255), index = True, primary_key = True)
     period = Column(Integer, nullable=True)
     form_id = Column(String(255), nullable=True)
+    name = Column(String(255), nullable=True)
+    age = Column(Integer, nullable=True)
+    gender = Column(String(10), nullable=True)
+    disease = Column(String(255), nullable=True)
+
 
 class BasicChat(BaseEntity):
     __abstract__ = True
