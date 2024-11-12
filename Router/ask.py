@@ -52,16 +52,13 @@ async def ask(request: Request, question: QuestionData, background_tasks: Backgr
         background_tasks.add_task(send_request_to_ai_server, question)
         return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
     except Exception as e:
-        raise e
         return JSONResponse(status_code=HTTP_400_BAD_REQUEST, content={"message": str(e)})
     
 def send_request_to_ai_server(question: QuestionData):
     response = requests.post(AI_SERVER_URL + "/qsmaker", json=question.model_dump())
-    print(response.json())
 
 def send_choice_to_ai_server(question: QuestionData):
     response = requests.post(AI_SERVER_URL + "/ask", json=question.model_dump())
-    print(response.json())
     
 @router.post("/answer", tags=["answer"])
 async def answer(request: Request, answer: AnswerData, background_tasks: BackgroundTasks):
@@ -78,7 +75,6 @@ async def answer(request: Request, answer: AnswerData, background_tasks: Backgro
         background_tasks.add_task(send_answer_to_frontend_server, answer)
         return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
     except Exception as e:
-        raise e
         return JSONResponse(status_code=HTTP_400_BAD_REQUEST, content={"message": str(e)})
     
 def extract_definitions(answer: str) -> list:
@@ -95,9 +91,3 @@ def send_choice_to_frontend_server(question: QuestionData):
 
 def send_answer_to_frontend_server(answer: AnswerData):
     requests.post(FRONTEND_SERVER_URL+"/kakao/callback-response/poster", json=answer.model_dump())
-
-@router.get("/test")
-async def test():
-    temp = TransactionService.get_chat_by_uid("test")
-    print([(i.utterance, i.created_at) for i in temp])
-    return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
