@@ -69,9 +69,9 @@ async def answer(request: Request, answer: AnswerData, background_tasks: Backgro
             background_tasks.add_task(send_choice_to_frontend_server, QuestionData(uid=answer.uid, question=str(answer.clarifying_questions), sessionId=answer.sessionId))
             return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
         print(answer.answer)
-        # answer.answer = json.loads(answer.answer)
-        # answer.answer["content"]["definitions"] = extract_definitions(answer.answer['content']['answer'])
-        # answer.answer = str(answer.answer)
+        answer.answer = json.loads(answer.answer)
+        answer.answer["content"]["definitions"] = extract_definitions(answer.answer['content']['answer'])
+        answer.answer = str(answer.answer)
         background_tasks.add_task(send_answer_to_frontend_server, answer)
         return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
     except Exception as e:
