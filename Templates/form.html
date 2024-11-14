@@ -324,14 +324,27 @@
                 .join(',');
 
             // Set form values
-            document.getElementById('formAge').value = age;
-            document.getElementById('formGender').value = selectedGender;
-            document.getElementById('formDisease').value = selectedDiseases;
-            document.getElementById('formOption').value = selectedFrequency;
+            const formData = new FormData(document.getElementById('dataForm'));
+            formData.set('age', age);
+            formData.set('gender', selectedGender);
+            formData.set('disease', selectedDiseases);
+            formData.set('subscription', selectedFrequency);
 
-            // Submit form
-            document.getElementById('dataForm').submit();
-            nextPage();
+            // Submit form asynchronously
+            fetch(document.getElementById('dataForm').action, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                nextPage(); // Show completion page after successful submission
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('제출 중 오류가 발생했습니다. 다시 시도해주세요.');
+            });
         }
 
         // Handle keyboard appearance
