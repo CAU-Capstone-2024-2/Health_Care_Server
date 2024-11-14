@@ -87,7 +87,7 @@ def extract_definitions(answer: str) -> list:
     for end_index, (word, definition) in automaton.iter(answer):
         if word not in seen_words:  # 단어가 이미 처리된 적이 없는 경우에만 추가
             definitions.append({"word": word, "definition": definition})
-            seen_words.add(word)  # 단어를 집합에 추가하여 중복 방지
+            seen_words.add(word)  # 단어를 집합에 추가하여 중복 방지 
     return definitions
 
 def send_choice_to_frontend_server(question: QuestionData):

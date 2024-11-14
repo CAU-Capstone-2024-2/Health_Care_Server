@@ -8,7 +8,7 @@ import re
 
 class Migrator:
     def __init__(self):
-        self.rule = re.compile(r"((qs)+(ca)+|(ca)+)")
+        self.rule = re.compile(r"((qs)+(ca)+|(ca)+)|(qa)+")
         # self.rule = re.compile(r"(qs)+(ca)+")
 
     def migrate(self):
