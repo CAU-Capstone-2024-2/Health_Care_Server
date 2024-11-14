@@ -34,7 +34,7 @@ async def create_form(request: Request):
                     "title": "사용자 정보 입력",
                     "description": "안녕하세요, 국민건강비서의 가상 복지상담관 김건강입니다. 아래 시작하기 버튼을 눌러 상담에 필요한 기본적인 정보를 알려주시면 꼼꼼히 확인해보겠습니다!",
                     "thumbnail": {
-                        "imageUrl": "https://i.ibb.co/M1kgbWT/f2e82db8-84d4-4596-ad10-8eaa8ce0f0c4-2.webp"
+                        "imageUrl": "https://i.ibb.co/6HCs2nm/Geongang-Kim.jpg"
                     },
                     "buttons": [
                         {
