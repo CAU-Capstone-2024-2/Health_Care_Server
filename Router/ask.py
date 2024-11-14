@@ -62,22 +62,22 @@ def send_choice_to_ai_server(question: QuestionData):
 async def answer(request: Request, answer: AnswerData, background_tasks: BackgroundTasks):
     try:
         TransactionService.save_chat(TransactionService.to_answer_entity(answer))
-        # if answer.status_code == 411:
-        if answer.clarifying_questions is not None:
+        if answer.status_code == 211:
             print(answer.clarifying_questions)
             background_tasks.add_task(send_choice_to_frontend_server, QuestionData(uid=answer.uid, question=str(answer.clarifying_questions), sessionId=answer.sessionId))
             return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
-        print(answer.answer)
-        if answer.status_code == 423:
+        elif answer.status_code == 423:
+            print(answer.answer)
             # Q삭제
             background_tasks.add_task(send_simple_text_to_frontend_server, answer)
             return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
-        # if answer.status_code == 202:
-        answer.answer = json.loads(answer.answer)
-        answer.answer["content"]["definitions"] = extract_definitions(answer.answer['content']['answer'])
-        answer.answer = str(answer.answer)
-        background_tasks.add_task(send_poster_to_frontend_server, answer)
-        return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
+        elif answer.status_code == 202:
+            print(answer.answer)
+            answer.answer = json.loads(answer.answer)
+            answer.answer["content"]["definitions"] = extract_definitions(answer.answer['content']['answer'])
+            answer.answer = str(answer.answer)
+            background_tasks.add_task(send_poster_to_frontend_server, answer)
+            return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
     except Exception as e:
         return JSONResponse(status_code=HTTP_400_BAD_REQUEST, content={"message": str(e)})
     
