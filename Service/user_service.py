@@ -53,7 +53,7 @@ class UserService:
                 return user.uid
             return None
         
-    def save_user_info(uid, age, gender, disease):
+    def save_user_info(uid, age, gender, disease, subscription):
         with get_db() as db:
             if user := db.query(User).filter(User.uid == uid).first():
                 user.age = age
@@ -63,6 +63,7 @@ class UserService:
                     gender = 'F'
                 user.gender = gender
                 user.disease = disease
+                user.subscription = subscription
                 db.commit()
             return True
         
