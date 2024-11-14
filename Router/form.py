@@ -68,11 +68,11 @@ async def get_form(request: Request, form_id: str):
         return JSONResponse(status_code=HTTP_400_BAD_REQUEST, content={"message": str(e)})
 
 @router.post("/submit/{form_id}")
-async def submit_form(request: Request, form_id: str, name: str = Form(...), age: int = Form(...), gender: str = Form(...), disease: str = Form(None)):
+async def submit_form(request: Request, form_id: str, age: int = Form(...), gender: str = Form(...), disease: str = Form(None)):
     try:
         if uid := UserService.get_user_by_form_id(form_id):
             UserService.remove_form(form_id)
-            UserService.save_user_info(uid, name, age, gender, disease)
+            UserService.save_user_info(uid, age, gender, disease)
         return JSONResponse(status_code=200, content={"message": "저장이 완료되었습니다."})
     except Exception as e:
         raise e

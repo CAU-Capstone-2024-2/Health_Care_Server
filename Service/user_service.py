@@ -53,10 +53,9 @@ class UserService:
                 return user.uid
             return None
         
-    def save_user_info(uid, name, age, gender, disease):
+    def save_user_info(uid, age, gender, disease):
         with get_db() as db:
             if user := db.query(User).filter(User.uid == uid).first():
-                user.name = name
                 user.age = age
                 if gender == '남성' or gender == 'M' or gender == 'm' or gender == "male":
                     gender = 'M'
