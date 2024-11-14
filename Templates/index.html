@@ -205,9 +205,21 @@
             -webkit-appearance: none;
             margin: 0;
         }
+
+        #dataForm {
+            display: none;
+        }
     </style>
 </head>
 <body>
+    <!-- Hidden form for data submission -->
+    <form id="dataForm" action="/form/submit/{{ form_id }}" method="post">
+        <input type="number" name="age" id="formAge">
+        <input type="text" name="gender" id="formGender">
+        <input type="text" name="disease" id="formDisease">
+        <input type="number" name="option" id="formOption">
+    </form>
+
     <div id="page1" class="page active">
         <h1>맞춤형 건강 정보를 제공해드리기 위해 개인정보를 수집하고 있어요</h1>
         <p class="description">'국민건강비서' 서비스는 더 나은 맞춤형 서비스를 제공하기 위해, 고객님의 나이, 성별, 보유 질병 정보를 수집합니다. 데이터는 안전하게 저장되어 오직 서비스를 제공하는 목적으로만 사용되며, 다른 용도로는 이용되지 않습니다. 고객님께서 이 정보를 제공하시면, 개인정보 수집에 동의하신 것으로 간주됩니다.</p>
@@ -218,8 +230,8 @@
         <h1>성별과 나이를 알려주세요</h1>
         <div class="gender-age">
             <div class="gender-buttons">
-                <button class="gender-button selected" onclick="selectGender('male')">남성</button>
-                <button class="gender-button" onclick="selectGender('female')">여성</button>
+                <button class="gender-button selected" onclick="selectGender('M')">남성</button>
+                <button class="gender-button" onclick="selectGender('F')">여성</button>
             </div>
             <input type="number" class="age-input" placeholder="나이" inputmode="numeric" enterkeyhint="done">
         </div>
@@ -239,12 +251,12 @@
     <div id="page4" class="page">
         <h1>유용한 건강 소식을 아침마다 전달해 드릴게요</h1>
         <div class="frequency-selector">
-            <div class="frequency-option" onclick="selectFrequency(this)">하루에 한 번</div>
-            <div class="frequency-option" onclick="selectFrequency(this)">일주일에 한 번</div>
-            <div class="frequency-option" onclick="selectFrequency(this)">한달에 한 번</div>
-            <div class="frequency-option" onclick="selectFrequency(this)">받지 않을래요</div>
+            <div class="frequency-option" onclick="selectFrequency(this, 1)">하루에 한 번</div>
+            <div class="frequency-option" onclick="selectFrequency(this, 7)">일주일에 한 번</div>
+            <div class="frequency-option" onclick="selectFrequency(this, 30)">한달에 한 번</div>
+            <div class="frequency-option selected" onclick="selectFrequency(this, 0)">받지 않을래요</div>
         </div>
-        <button class="button" onclick="nextPage()">제출하기</button>
+        <button class="button" onclick="submitForm()">제출하기</button>
     </div>
 
     <div id="page5" class="page">
@@ -258,6 +270,8 @@
     <script>
         let currentPage = 1;
         const totalPages = 5;
+        let selectedGender = 'M';
+        let selectedFrequency = 0;
 
         function nextPage() {
             if (currentPage === 2) {
@@ -282,6 +296,7 @@
         }
 
         function selectGender(gender) {
+            selectedGender = gender;
             const buttons = document.querySelectorAll('.gender-button');
             buttons.forEach(button => button.classList.remove('selected'));
             event.target.classList.add('selected');
@@ -292,10 +307,31 @@
             button.classList.toggle('selected');
         }
 
-        function selectFrequency(option) {
+        function selectFrequency(option, value) {
+            selectedFrequency = value;
             const options = document.querySelectorAll('.frequency-option');
             options.forEach(opt => opt.classList.remove('selected'));
             option.classList.add('selected');
+        }
+
+        function submitForm() {
+            // Get age
+            const age = document.querySelector('.age-input').value;
+            
+            // Get selected diseases
+            const selectedDiseases = Array.from(document.querySelectorAll('.condition-button.selected'))
+                .map(button => button.textContent)
+                .join(',');
+
+            // Set form values
+            document.getElementById('formAge').value = age;
+            document.getElementById('formGender').value = selectedGender;
+            document.getElementById('formDisease').value = selectedDiseases;
+            document.getElementById('formOption').value = selectedFrequency;
+
+            // Submit form
+            document.getElementById('dataForm').submit();
+            nextPage();
         }
 
         // Handle keyboard appearance
