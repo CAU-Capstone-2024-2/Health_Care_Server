@@ -25,8 +25,8 @@ async def config(request: Request):
     try:
         data = await request.json()
         uid = data['userRequest']['user']['id']
-        period = data['action']['clientExtra']['period']
-        UserService.change_config(uid, period)
+        period = data['action']['clientExtra']['subscription']
+        UserService.change_config(uid, subscription)
         return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
     except Exception as e:
         raise e

@@ -19,7 +19,7 @@ class BaseEntity(Base):
 class User(BaseEntity):
     __tablename__ = "user"
     uid = Column(String(255), index = True, primary_key = True)
-    subscription = Column(Integer, nullable=True)
+    subscription = Column(Integer, nullable=False, default=0)
     form_id = Column(String(255), nullable=True)
     age = Column(Integer, nullable=True)
     gender = Column(String(10), nullable=True)
