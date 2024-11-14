@@ -10,8 +10,6 @@ from fastapi import Request
 import requests
 from Service.transaction_service import TransactionService
 from Service.user_service import UserService
-from sqlalchemy.orm import Session
-import ast
 from ahocorasick import Automaton
 
 

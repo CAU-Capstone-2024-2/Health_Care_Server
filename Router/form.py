@@ -6,10 +6,6 @@ from starlette.status import *
 import os
 from dotenv import load_dotenv
 from fastapi import Request, Form
-import requests
-from Service.transaction_service import TransactionService
-from sqlalchemy.orm import Session
-import ast
 import uuid
 from Service.user_service import UserService
 
