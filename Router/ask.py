@@ -78,6 +78,10 @@ async def answer(request: Request, answer: AnswerData, background_tasks: Backgro
             answer.answer = str(answer.answer)
             background_tasks.add_task(send_poster_to_frontend_server, answer)
             return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
+        elif answer.status_code == 201:
+            print(answer.answer)
+            background_tasks.add_task(send_simple_text_to_frontend_server, answer)
+            return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
     except Exception as e:
         return JSONResponse(status_code=HTTP_400_BAD_REQUEST, content={"message": str(e)})
     
