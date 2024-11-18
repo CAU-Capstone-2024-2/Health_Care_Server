@@ -48,6 +48,6 @@ class TransactionService:
     def get_chat_by_sessionId_Q(sessionId:str):
         with get_db() as db:
             try:
-                return db.query(Chat).filter(Chat.sessionId == sessionId, Chat.type == "q").order_by(Chat.created_at.desc()).all()
+                return db.query(Chat).filter(Chat.sessionId == sessionId, Chat.type == "q").order_by(Chat.created_at.desc()).first()
             except Exception as e:
                 raise e

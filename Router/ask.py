@@ -66,7 +66,9 @@ async def answer(request: Request, answer: AnswerData, background_tasks: Backgro
             print(answer.clarifying_questions)
             question = TransactionService.get_chat_by_sessionId_Q(answer.sessionId)
             # 여기에 Question을 추가하여 전송
-            background_tasks.add_task(send_choice_to_frontend_server, QuestionData(uid=answer.uid, question=str(answer.clarifying_questions), sessionId=answer.sessionId))
+            data = QuestionData(uid=answer.uid, question=str(answer.clarifying_questions), sessionId=answer.sessionId)
+            data.originalQuestion = question.utterance
+            background_tasks.add_task(send_choice_to_frontend_server, data)
             return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
         elif answer.status_code == 423:
             print(answer.answer)
@@ -85,6 +87,7 @@ async def answer(request: Request, answer: AnswerData, background_tasks: Backgro
             background_tasks.add_task(send_simple_text_to_frontend_server, answer)
             return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
     except Exception as e:
+        raise e
         return JSONResponse(status_code=HTTP_400_BAD_REQUEST, content={"message": str(e)})
     
 def extract_definitions(answer: str) -> list:
