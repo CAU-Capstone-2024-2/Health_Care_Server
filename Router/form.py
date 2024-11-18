@@ -84,7 +84,7 @@ async def submit_form(request: Request, form_id: str, age: int = Form(...), gend
                 "Authorization": "KakaoAK "+ REST_API_KEY,
                 "Content-Type": "application/json"
             }
-            requests.post("https://bot-api.kakao.com/v2/bots/"+BOT_ID+"/talk", content=json_form, headers=header)
+            requests.post("https://bot-api.kakao.com/v2/bots/"+BOT_ID+"/talk", data=json_form, headers=header)
             return JSONResponse(status_code=200, content=json_form)
         return JSONResponse(status_code=HTTP_404_NOT_FOUND, content={"message": "만료된 폼입니다."})
     except Exception as e:
