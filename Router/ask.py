@@ -64,6 +64,8 @@ async def answer(request: Request, answer: AnswerData, background_tasks: Backgro
         TransactionService.save_chat(TransactionService.to_answer_entity(answer))
         if answer.status_code == 211:
             print(answer.clarifying_questions)
+            question = TransactionService.get_chat_by_sessionId_Q(answer.sessionId)
+            # 여기에 Question을 추가하여 전송
             background_tasks.add_task(send_choice_to_frontend_server, QuestionData(uid=answer.uid, question=str(answer.clarifying_questions), sessionId=answer.sessionId))
             return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
         elif answer.status_code == 423:
