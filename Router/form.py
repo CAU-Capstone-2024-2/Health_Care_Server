@@ -1,5 +1,6 @@
 from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
+import requests
 from Database.database import get_db, rollback_to_savepoint
 from fastapi import APIRouter, Depends, BackgroundTasks
 from starlette.status import *
@@ -13,6 +14,8 @@ router = APIRouter(prefix="/form", tags=["form"])
 
 load_dotenv(".env")
 BACKEND_SERVER_URL = os.getenv("BACKEND_SERVER_URL")
+BOT_ID = os.getenv("BOT_ID")
+REST_API_KEY = os.getenv("REST_API_KEY")
 
 templates = Jinja2Templates(directory="Templates")
 @router.post("/create")
@@ -77,6 +80,11 @@ async def submit_form(request: Request, form_id: str, age: int = Form(...), gend
                     {"type": "botUserKey", "id": uid}
                 ]
             }
+            header = {
+                "Authorization": "KakaoAK "+ REST_API_KEY,
+                "Content-Type": "application/json"
+            }
+            requests.post("https://bot-api.kakao.com/v2/bots/"+BOT_ID+"/talk", content=json_form, headers=header)
             return JSONResponse(status_code=200, content=json_form)
         return JSONResponse(status_code=HTTP_404_NOT_FOUND, content={"message": "만료된 폼입니다."})
     except Exception as e:
