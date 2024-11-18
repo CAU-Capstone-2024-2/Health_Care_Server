@@ -1,6 +1,6 @@
 import random
 import uuid
-from sqlalchemy import JSON, DateTime, ForeignKey, Column, Index, Integer, PrimaryKeyConstraint, String, Time, Boolean, UniqueConstraint, event
+from sqlalchemy import JSON, Date, DateTime, ForeignKey, Column, Index, Integer, PrimaryKeyConstraint, String, Time, Boolean, UniqueConstraint, event
 from sqlalchemy.orm import relationship
 from Database.database import Base
 from datetime import datetime, timezone, timedelta
@@ -19,6 +19,7 @@ class BaseEntity(Base):
 class User(BaseEntity):
     __tablename__ = "user"
     uid = Column(String(255), index = True, primary_key = True)
+    subscription_date = Column(Date, nullable=True)
     subscription = Column(Integer, nullable=False, default=0)
     form_id = Column(String(255), nullable=True)
     age = Column(Integer, nullable=True)
