@@ -69,7 +69,16 @@ async def submit_form(request: Request, form_id: str, age: int = Form(...), gend
         if uid := UserService.get_user_by_form_id(form_id):
             UserService.remove_form(form_id)
             UserService.save_user_info(uid, age, gender, disease, subscription)
-        return JSONResponse(status_code=200, content={"message": "저장이 완료되었습니다."})
+            json_form = {
+                "event": {
+                    "name": "onSubscribe"
+                },
+                "user": [
+                    {"type": "botUserKey", "id": uid}
+                ]
+            }
+            return JSONResponse(status_code=200, content=json_form)
+        return JSONResponse(status_code=HTTP_404_NOT_FOUND, content={"message": "만료된 폼입니다."})
     except Exception as e:
         raise e
         return JSONResponse(status_code=500, content={"message": str(e)})
