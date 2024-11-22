@@ -1,5 +1,4 @@
 from fastapi.responses import JSONResponse
-from fastapi.templating import Jinja2Templates
 import requests
 from Database.database import get_db, rollback_to_savepoint
 from fastapi import APIRouter, Depends, BackgroundTasks
@@ -56,11 +55,10 @@ async def request_customized_info(request: Request):
         }
         return JSONResponse(status_code=200, content=json_form)
     except Exception as e:
-        raise e
         return JSONResponse(status_code=500, content={"message": "Internal server error"})
 
 @router.post("/test")
-async def request_customized_info(request: Request, uid: UID, background_tasks: BackgroundTasks):
+async def request_customized_info(request: Request, uid: UID):
     json_form = {
         "event": {
             "name": "sendPersonalReport"
