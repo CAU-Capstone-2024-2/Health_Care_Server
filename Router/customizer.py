@@ -29,7 +29,7 @@ async def request_customized_info(request: Request):
         if user is None:
             return JSONResponse(status_code=404, content={"message": "User not found"})
         age = user.age
-        disease = user.disease
+        disease = "<disease>"+user.disease+"</disease>"
         chats = TransactionService.get_chat_by_uid_C(uid)
         chat_data = []
         for i in range(min(len(chats), 5)):
