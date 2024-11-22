@@ -29,13 +29,16 @@ async def request_customized_info(request: Request):
         if user is None:
             return JSONResponse(status_code=404, content={"message": "User not found"})
         age = user.age
+        index = user.index
         disease = "<disease>"+user.disease+"</disease>"
         chats = TransactionService.get_chat_by_uid_C(uid)
         chat_data = []
         for i in range(min(len(chats), 5)):
             chat_data.append(chats[i].utterance)
         string_form = f"""이 노인은 현재 {age}세이며, {disease} 질병을 앓고 있습니다. 최근 대화 내용은 다음과 같습니다:\n""" + "\n".join(chat_data)
-        response = requests.post(AI_SERVER_URL + "/custom_information", json={"info": string_form})
+        response = requests.post(AI_SERVER_URL + "/custom_information", json={"info": string_form, "index": index})
+        index = response.json()["index"]
+        UserService.append_index(uid, index)
         img_url = response.json()["img_url"]
         json_form = {
             "version": "2.0",

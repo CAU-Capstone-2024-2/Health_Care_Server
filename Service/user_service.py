@@ -64,3 +64,12 @@ class UserService:
                 db.commit()
             return True
         
+    def append_index(uid, index):
+        with get_db() as db:
+            user = db.query(User).filter(User.uid == uid).first()
+            if user.used_index is None:
+                user.used_index = index
+            else:
+                user.used_index += "," + index
+            db.commit()
+        return True
