@@ -29,7 +29,7 @@ async def request_customized_info(request: Request):
         if user is None:
             return JSONResponse(status_code=404, content={"message": "User not found"})
         age = user.age
-        index = user.index
+        index = user.used_index.split(",") if user.used_index else []
         disease = "<disease>"+user.disease+"</disease>"
         chats = TransactionService.get_chat_by_uid_C(uid)
         chat_data = []
@@ -37,6 +37,7 @@ async def request_customized_info(request: Request):
             chat_data.append(chats[i].utterance)
         string_form = f"""이 노인은 현재 {age}세이며, {disease} 질병을 앓고 있습니다. 최근 대화 내용은 다음과 같습니다:\n""" + "\n".join(chat_data)
         response = requests.post(AI_SERVER_URL + "/custom_information", json={"info": string_form, "index": index})
+        print(response.json())
         index = response.json()["index"]
         UserService.append_index(uid, index)
         img_url = response.json()["img_url"]
@@ -55,6 +56,7 @@ async def request_customized_info(request: Request):
         }
         return JSONResponse(status_code=200, content=json_form)
     except Exception as e:
+        raise e
         return JSONResponse(status_code=500, content={"message": "Internal server error"})
 
 @router.post("/test")
@@ -72,3 +74,4 @@ async def request_customized_info(request: Request, uid: UID, background_tasks: 
         "Content-Type": "application/json"
     }
     requests.post("https://bot-api.kakao.com/v2/bots/"+BOT_ID+"/talk", json=json_form, headers=header)
+    return JSONResponse(status_code=200, content={"message": "success"})
