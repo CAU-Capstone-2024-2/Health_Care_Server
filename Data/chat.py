@@ -26,3 +26,6 @@ class AnswerDataServer(BaseModel):
     uid: str
     answer: str
     created_at: str
+
+class UID(BaseModel):
+    uid: str
