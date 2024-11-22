@@ -25,6 +25,7 @@ class User(BaseEntity):
     age = Column(Integer, nullable=True)
     gender = Column(String(10), nullable=True)
     disease = Column(String(255), nullable=True)
+    used_index = Column(String(100), nullable=True)
 
 
 class BasicChat(BaseEntity):
