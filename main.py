@@ -13,6 +13,9 @@ from starlette.middleware.sessions import SessionMiddleware
 from dotenv import load_dotenv
 from Router import ask, user, form, customizer
 from Service.chat_migrator import Migrator
+from apscheduler.schedulers.background import BackgroundScheduler
+from Service.subscription_service import SubscriptionService
+
 create_database()
 
 load_dotenv(".env")
@@ -67,6 +70,10 @@ if __name__ == "__main__":
         while True:
             schedule.run_pending()
             time.sleep(1)
+
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(SubscriptionService.send_subscription, 'cron', hour=9, minute=0)
+    scheduler.start()
 
     # 매 10분마다 get_all_uid 실행
     schedule.every(5).seconds.do(migrator.migrate)

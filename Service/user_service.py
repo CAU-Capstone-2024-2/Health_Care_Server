@@ -1,5 +1,7 @@
 from Database.model import User
 from Database.database import get_db
+from datetime import date
+
 class UserService:
     def to_user_entity(uid):
         return User(uid=uid)
@@ -61,6 +63,10 @@ class UserService:
                 user.gender = gender
                 user.disease = disease
                 user.subscription = subscription
+                if subscription:
+                    user.subscription_date = date.today()
+                else:
+                    user.subscription_date = None
                 db.commit()
             return True
         
