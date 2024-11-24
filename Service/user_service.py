@@ -19,10 +19,16 @@ class UserService:
                 db.rollback()
                 raise e
             
-    def change_config(uid, period):
+    def change_config(uid, subscription):
         with get_db() as db:
             user = db.query(User).filter(User.uid == uid).first()
-            user.period = period
+            if subscription and not user.subscription_date:
+                user.subscription_date = date.today()
+            elif subscription and user.subscription_date:
+                pass
+            elif not subscription:
+                user.subscription_date = None
+            user.subscription = subscription
             db.commit()
         return True
     
