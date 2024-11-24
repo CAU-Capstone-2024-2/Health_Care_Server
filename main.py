@@ -15,6 +15,7 @@ from Router import ask, user, form, customizer
 from Service.chat_migrator import Migrator
 from apscheduler.schedulers.background import BackgroundScheduler
 from Service.subscription_service import SubscriptionService
+import pytz
 
 create_database()
 
@@ -71,7 +72,7 @@ if __name__ == "__main__":
             schedule.run_pending()
             time.sleep(1)
 
-    scheduler = BackgroundScheduler()
+    scheduler = BackgroundScheduler(timezone=pytz.timezone('Asia/Seoul'))
     scheduler.add_job(SubscriptionService.send_subscription, 'cron', hour=9, minute=0)
     scheduler.start()
 
