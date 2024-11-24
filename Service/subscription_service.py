@@ -16,17 +16,15 @@ class SubscriptionService:
             return db.query(User).filter(User.subscription != None, User.subscription_date != None).all()
         
     def send_subscription():
+        print("send_subscription")
         with get_db() as db:
             users = SubscriptionService.get_subscribed_users()
             today = date.today()
             for user in users:
-                # if (today - user.subscription_date).days % user.subscription == 0:
-                test = os.getenv("TEST")
-                if user.uid == test:
-                    SubscriptionService.send_to_server(user.uid)
-                    user.subscription_date = today
-                    db.commit()
-                    SubscriptionService.send_to_server(user.uid)
+                if (today - user.subscription_date).days % user.subscription == 0:
+                    if SubscriptionService.send_to_server(user.uid):
+                        user.subscription_date = today
+                        db.commit()
                     time.sleep(1)
             db.commit()
         return True
@@ -37,11 +35,13 @@ class SubscriptionService:
                 "name": "sendPersonalReport"
             },
             "user": [
-                {"type": "botUserKey", "id": uid.uid}
+                {"type": "botUserKey", "id": uid}
             ]
         }
         header = {
             "Authorization": "KakaoAK "+ REST_API_KEY,
             "Content-Type": "application/json"
         }
-        requests.post("https://bot-api.kakao.com/v2/bots/"+BOT_ID+"/talk", json=json_form, headers=header)
+        response = requests.post("https://bot-api.kakao.com/v2/bots/"+BOT_ID+"/talk", json=json_form, headers=header)
+        if response.status_code == 200:
+            return True
