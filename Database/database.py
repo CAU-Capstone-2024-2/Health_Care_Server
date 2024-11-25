@@ -8,8 +8,9 @@ load_dotenv(".env")
 DB_USERNAME=os.getenv("DB_USERNAME")
 DB_PASSWORD=os.getenv("DB_PASSWORD");DB_HOST=os.getenv("DB_HOST")
 DB_HOST=os.getenv("DB_HOST")
+DB_NAME = os.getenv("DB_NAME")
 TEMP_URL = f"mysql+mysqlconnector://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:3306/"
-DATABASE_URL = f"mysql+mysqlconnector://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:3306/capstone"
+DATABASE_URL = f"mysql+mysqlconnector://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:3306/{DB_NAME}"
 
 temp_engine = create_engine(TEMP_URL)
 engine = create_engine(
