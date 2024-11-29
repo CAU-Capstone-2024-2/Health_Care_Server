@@ -83,6 +83,10 @@ async def answer(request: Request, answer: AnswerData, background_tasks: Backgro
             # Q삭제
             background_tasks.add_task(send_simple_text_to_frontend_server, answer)
             return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
+        elif answer.status_code == 201:
+            print(answer.answer)
+            background_tasks.add_task(send_simple_text_to_frontend_server, answer)
+            return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
         elif answer.status_code == 202:
             print(answer.answer)
             answer.answer = json.loads(answer.answer)
@@ -90,9 +94,9 @@ async def answer(request: Request, answer: AnswerData, background_tasks: Backgro
             answer.answer = str(answer.answer)
             background_tasks.add_task(send_poster_to_frontend_server, answer)
             return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
-        elif answer.status_code == 201:
+        elif answer.status_code == 203:
             print(answer.answer)
-            background_tasks.add_task(send_simple_text_to_frontend_server, answer)
+            background_tasks.add_task(send_link_to_frontend_server, answer)
             return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
     except Exception as e:
         raise e
@@ -115,3 +119,6 @@ def send_poster_to_frontend_server(answer: AnswerData):
 
 def send_simple_text_to_frontend_server(answer: AnswerData):
     requests.post(FRONTEND_SERVER_URL+"/kakao/callback-response/simple-text", json=answer.model_dump())
+
+def send_link_to_frontend_server(answer: AnswerData):
+    requests.post(FRONTEND_SERVER_URL+"/kakao/callback-response/link", json=answer.model_dump())
