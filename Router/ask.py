@@ -41,10 +41,6 @@ async def ask(request: Request, question: QuestionData, background_tasks: Backgr
             TransactionService.save_chat(TransactionService.to_question_entity_c(question))
             background_tasks.add_task(send_choice_to_ai_server, question)
             return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
-        # elif question.q_not_found:
-        #     TransactionService.save_chat(TransactionService.to_question_entity(question))
-        #     background_tasks.add_task(send_request_to_ai_server, question)
-        #     return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
         TransactionService.save_chat(TransactionService.to_question_entity(question))
         print(question.model_dump())
         background_tasks.add_task(send_request_to_ai_server, question)
@@ -65,7 +61,6 @@ async def answer(request: Request, answer: AnswerData, background_tasks: Backgro
         if answer.status_code == 211:
             print(answer.clarifying_questions)
             question = TransactionService.get_chat_by_sessionId_Q(answer.sessionId)
-            # 여기에 Question을 추가하여 전송
             data = QuestionData(uid=answer.uid, question=str(answer.clarifying_questions), sessionId=answer.sessionId)
             data.originalQuestion = question.utterance
             background_tasks.add_task(send_choice_to_frontend_server, data)
@@ -73,14 +68,13 @@ async def answer(request: Request, answer: AnswerData, background_tasks: Backgro
         elif answer.status_code == 212:
             print(answer.clarifying_questions)
             question = TransactionService.get_chat_by_sessionId_Q(answer.sessionId)
-            # 여기에 Question을 추가하여 전송
             data = QuestionData(uid=answer.uid, question=str(answer.clarifying_questions), sessionId=answer.sessionId)
             data.isAcute = True
             background_tasks.add_task(send_choice_to_frontend_server, data)
             return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
         elif answer.status_code == 423:
             print(answer.answer)
-            # Q삭제
+            TransactionService.delete_chat_by_sessionId(answer.sessionId)
             background_tasks.add_task(send_simple_text_to_frontend_server, answer)
             return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
         elif answer.status_code == 201:

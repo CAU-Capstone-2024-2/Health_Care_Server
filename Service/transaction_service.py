@@ -58,3 +58,13 @@ class TransactionService:
                 return db.query(CompleteChat).filter(CompleteChat.uid == uid, CompleteChat.type == "c").order_by(CompleteChat.created_at.desc()).all()
             except Exception as e:
                 raise e
+            
+    def delete_chat_by_sessionId(sessionId:str):
+        with get_db() as db:
+            try:
+                db.query(Chat).filter(Chat.sessionId == sessionId).delete()
+                db.commit()
+            except Exception as e:
+                db.query(Chat).filter(Chat.sessionId == sessionId).delete()
+                db.commit()
+                raise e
