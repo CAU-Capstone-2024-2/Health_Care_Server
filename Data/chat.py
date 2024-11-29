@@ -6,6 +6,7 @@ class QuestionData(BaseModel):
     sessionId: str
     is_from_list: bool = None
     not_found: bool = None
+    isAcute: bool = None
     class Config:
         extra = "allow"
 

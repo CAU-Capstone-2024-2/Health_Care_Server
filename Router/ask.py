@@ -70,6 +70,14 @@ async def answer(request: Request, answer: AnswerData, background_tasks: Backgro
             data.originalQuestion = question.utterance
             background_tasks.add_task(send_choice_to_frontend_server, data)
             return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
+        elif answer.status_code == 212:
+            print(answer.clarifying_questions)
+            question = TransactionService.get_chat_by_sessionId_Q(answer.sessionId)
+            # 여기에 Question을 추가하여 전송
+            data = QuestionData(uid=answer.uid, question=str(answer.clarifying_questions), sessionId=answer.sessionId)
+            data.isAcute = True
+            background_tasks.add_task(send_choice_to_frontend_server, data)
+            return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
         elif answer.status_code == 423:
             print(answer.answer)
             # Q삭제
