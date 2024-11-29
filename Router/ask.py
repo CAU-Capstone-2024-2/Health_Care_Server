@@ -79,13 +79,14 @@ async def answer(request: Request, answer: AnswerData, background_tasks: Backgro
             return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
         elif answer.status_code == 201:
             print(answer.answer)
+            TransactionService.delete_chat_by_sessionId(answer.sessionId)
             background_tasks.add_task(send_simple_text_to_frontend_server, answer)
             return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
         elif answer.status_code == 202:
             print(answer.answer)
             answer.answer = json.loads(answer.answer)
             answer.answer["content"]["definitions"] = extract_definitions(answer.answer['content']['answer'])
-            answer.answer = str(answer.answer)
+            answer.answer = json.dumps(answer.answer)
             background_tasks.add_task(send_poster_to_frontend_server, answer)
             return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
         elif answer.status_code == 203:
