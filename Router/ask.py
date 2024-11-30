@@ -11,6 +11,7 @@ import requests
 from Service.transaction_service import TransactionService
 from Service.user_service import UserService
 from ahocorasick import Automaton
+from Service.aes_service import AesService
 
 
 router = APIRouter(prefix="/api")
@@ -37,12 +38,18 @@ async def ask(request: Request, question: QuestionData, background_tasks: Backgr
         # 대화 저장 코드
         if UserService.get_user(question.uid) is None:
             UserService.save_user(UserService.to_user_entity(question.uid))
+        user = UserService.get_user(question.uid)
+        question.info = ""
+        if user.age:
+            question.info += f"""이 노인은 현재 {user.age}세입니다."""
+        if user.disease:
+            question.info += f"""이 노인은 {user.disease}에 관심을 가지고 있습니다."""
+        print(question.model_dump())
         if question.is_from_list:
-            TransactionService.save_chat(TransactionService.to_question_entity_c(question))
+            TransactionService.save_chat(TransactionService.to_question_entity_c(question)) 
             background_tasks.add_task(send_choice_to_ai_server, question)
             return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
         TransactionService.save_chat(TransactionService.to_question_entity(question))
-        print(question.model_dump())
         background_tasks.add_task(send_request_to_ai_server, question)
         return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
     except Exception as e:
@@ -86,6 +93,7 @@ async def answer(request: Request, answer: AnswerData, background_tasks: Backgro
             print(answer.answer)
             answer.answer = json.loads(answer.answer)
             answer.answer["content"]["definitions"] = extract_definitions(answer.answer['content']['answer'])
+            answer.answer["tts_key"]= AesService.encrypt(answer.answer)
             answer.answer = json.dumps(answer.answer)
             background_tasks.add_task(send_poster_to_frontend_server, answer)
             return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
