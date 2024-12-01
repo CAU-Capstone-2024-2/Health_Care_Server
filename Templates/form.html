@@ -135,29 +135,41 @@
         }
 
         .condition-buttons {
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);  /* Two columns */
             gap: 12px;
-            margin-top: 30px;
-            padding: 0 20px;
+            margin: 20px;
+            margin-bottom: 80px;  /* Space for bottom button */
         }
 
         .condition-button {
             width: 100%;
-            height: 56px;
-            border: none;
-            border-radius: 8px;
-            background: #f2f2f7;
+            min-height: 60px;
+            border: 2px solid #e5e5ea;  /* More visible border */
+            border-radius: 12px;
+            background: white;
             font-size: 17px;
             text-align: center;
             cursor: pointer;
             color: #000;
             font-weight: 400;
+            padding: 12px;
+            line-height: 1.3;
+            word-break: keep-all;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .condition-button:active {
+            transform: scale(0.98);
         }
 
         .condition-button.selected {
             background: #007AFF;
             color: white;
+            border-color: #007AFF;
         }
 
         .frequency-selector {
@@ -209,6 +221,109 @@
         #dataForm {
             display: none;
         }
+
+        /* Update font size adjustment styles */
+        .font-size-controls {
+            position: fixed;
+            bottom: 80px;  
+            right: 20px;
+            display: none;  
+            flex-direction: column;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            border: 2px solid #007AFF;
+        }
+
+        /* Show font controls only when page1 is active */
+        body:has(#page1.active) .font-size-controls {
+            display: flex;
+        }
+
+        .font-size-label {
+            text-align: center;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .font-size-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .font-size-btn {
+            flex: 1;
+            height: 48px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            padding: 0 12px;
+        }
+
+        .font-size-btn span {
+            margin-left: 4px;
+        }
+
+        .font-size-btn:hover {
+            background: #f8f8f8;
+        }
+
+        .font-size-btn.active {
+            background: #007AFF;
+            color: white;
+            border-color: #007AFF;
+        }
+
+        /* Add styles for page 3 specific layout */
+        #page3 h1 {
+            margin: 30px 20px 15px;
+            font-size: 22px;
+            line-height: 1.4;
+        }
+
+        #page3 .description {
+            margin: 0 20px 20px;
+            font-size: 16px;
+            line-height: 1.5;
+            color: #666;
+        }
+
+        /* Ensure the main button stays at the bottom */
+        #page3 .button {
+            position: fixed;
+            bottom: 20px;
+            width: calc(100% - 40px);
+            max-width: 410px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            height: 56px;
+            font-size: 18px;
+        }
+
+        /* Remove fade effect at the bottom of scrollable area */
+        /* .condition-buttons::after {
+            content: '';
+            position: fixed;
+            bottom: 90px;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: linear-gradient(to bottom, transparent, white);
+            pointer-events: none;
+            z-index: 5;
+        } */
     </style>
 </head>
 <body>
@@ -216,9 +331,22 @@
     <form id="dataForm" action="/form/submit/{{ form_id }}" method="post">
         <input type="number" name="age" id="formAge">
         <input type="text" name="gender" id="formGender">
-        <input type="text" name="disease" id="formDisease">
+        <input type="text" name="conditions" id="formConditions">
         <input type="number" name="subscription" id="formOption">
     </form>
+
+    <!-- Updated font size adjustment buttons -->
+    <div class="font-size-controls">
+        <div class="font-size-label">글자 크기</div>
+        <div class="font-size-buttons">
+            <button class="font-size-btn" onclick="changeFontSize('normal')" data-size="normal">
+                가<span>보통</span>
+            </button>
+            <button class="font-size-btn" onclick="changeFontSize('large')" data-size="large">
+                가<span>크게</span>
+            </button>
+        </div>
+    </div>
 
     <div id="page1" class="page active">
         <h1>맞춤형 건강 정보를 제공해드리기 위해 개인정보를 수집하고 있어요</h1>
@@ -378,6 +506,43 @@
             // Set "받지 않을래요" as default
             const frequencyOptions = document.querySelectorAll('.frequency-option');
             frequencyOptions[3].classList.add('selected');
+        });
+
+        // Font size adjustment functionality
+        function changeFontSize(size) {
+            const buttons = document.querySelectorAll('.font-size-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-size="${size}"]`).classList.add('active');
+
+            let fontSize = '16px';
+            let h1Size = '24px';
+            let buttonSize = '16px';
+            let descSize = '14px';
+
+            if (size === 'large') {
+                fontSize = '20px';
+                h1Size = '28px';
+                buttonSize = '20px';
+                descSize = '18px';
+            }
+
+            document.body.style.fontSize = fontSize;
+            document.querySelectorAll('h1').forEach(h1 => h1.style.fontSize = h1Size);
+            document.querySelectorAll('.button').forEach(btn => btn.style.fontSize = buttonSize);
+            document.querySelectorAll('.description').forEach(desc => desc.style.fontSize = descSize);
+
+            // Save preference to localStorage
+            localStorage.setItem('preferredFontSize', size);
+        }
+
+        // Apply saved font size preference on page load and page changes
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedSize = localStorage.getItem('preferredFontSize');
+            if (savedSize) {
+                changeFontSize(savedSize);
+            } else {
+                changeFontSize('normal');
+            }
         });
     </script>
 </body>
