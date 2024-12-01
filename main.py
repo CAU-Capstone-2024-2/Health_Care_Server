@@ -55,12 +55,12 @@ app.include_router(read.router)
 
 from fastapi.responses import JSONResponse
 from fastapi.requests import Request
-@app.exception_handler(404)
-async def not_found_handler(request: Request, exc):
-    return JSONResponse(
-        status_code=200,
-        content={"message": "You fool bro, this is not the page you are looking for"}
-    )
+# @app.exception_handler(404)
+# async def not_found_handler(request: Request, exc):
+#     return JSONResponse(
+#         status_code=200,
+#         content={"message": "You fool bro, this is not the page you are looking for"}
+#     )
 # CORS
 origins = [ FRONTEND_SERVER_URL, AI_SERVER_URL]
 
