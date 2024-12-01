@@ -11,6 +11,7 @@ import requests
 from Service.transaction_service import TransactionService
 from Service.user_service import UserService
 from ahocorasick import Automaton
+from Service.aes_service import AesService
 
 
 router = APIRouter(prefix="/api")
@@ -37,16 +38,18 @@ async def ask(request: Request, question: QuestionData, background_tasks: Backgr
         # 대화 저장 코드
         if UserService.get_user(question.uid) is None:
             UserService.save_user(UserService.to_user_entity(question.uid))
+        user = UserService.get_user(question.uid)
+        question.info = ""
+        if user.age:
+            question.info += f"""이 노인은 현재 {user.age}세입니다."""
+        if user.disease:
+            question.info += f"""이 노인은 {user.disease}에 관심을 가지고 있습니다."""
+        print(question.model_dump())
         if question.is_from_list:
-            TransactionService.save_chat(TransactionService.to_question_entity_c(question))
+            TransactionService.save_chat(TransactionService.to_question_entity_c(question)) 
             background_tasks.add_task(send_choice_to_ai_server, question)
             return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
-        # elif question.q_not_found:
-        #     TransactionService.save_chat(TransactionService.to_question_entity(question))
-        #     background_tasks.add_task(send_request_to_ai_server, question)
-        #     return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
         TransactionService.save_chat(TransactionService.to_question_entity(question))
-        print(question.model_dump())
         background_tasks.add_task(send_request_to_ai_server, question)
         return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
     except Exception as e:
@@ -65,26 +68,37 @@ async def answer(request: Request, answer: AnswerData, background_tasks: Backgro
         if answer.status_code == 211:
             print(answer.clarifying_questions)
             question = TransactionService.get_chat_by_sessionId_Q(answer.sessionId)
-            # 여기에 Question을 추가하여 전송
             data = QuestionData(uid=answer.uid, question=str(answer.clarifying_questions), sessionId=answer.sessionId)
             data.originalQuestion = question.utterance
             background_tasks.add_task(send_choice_to_frontend_server, data)
             return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
+        elif answer.status_code == 212:
+            print(answer.clarifying_questions)
+            question = TransactionService.get_chat_by_sessionId_Q(answer.sessionId)
+            data = QuestionData(uid=answer.uid, question=str(answer.clarifying_questions), sessionId=answer.sessionId)
+            data.isAcute = True
+            background_tasks.add_task(send_choice_to_frontend_server, data)
+            return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
         elif answer.status_code == 423:
             print(answer.answer)
-            # Q삭제
+            TransactionService.delete_chat_by_sessionId(answer.sessionId)
             background_tasks.add_task(send_simple_text_to_frontend_server, answer)
-            return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
-        elif answer.status_code == 202:
-            print(answer.answer)
-            answer.answer = json.loads(answer.answer)
-            answer.answer["content"]["definitions"] = extract_definitions(answer.answer['content']['answer'])
-            answer.answer = str(answer.answer)
-            background_tasks.add_task(send_poster_to_frontend_server, answer)
             return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
         elif answer.status_code == 201:
             print(answer.answer)
+            TransactionService.delete_chat_by_sessionId(answer.sessionId)
             background_tasks.add_task(send_simple_text_to_frontend_server, answer)
+            return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
+        elif answer.status_code == 202:
+            answer.answer = json.loads(answer.answer)
+            answer.answer["content"]["definitions"] = extract_definitions(answer.answer['content']['answer'])
+            answer.answer["tts_key"]= AesService.encrypt(answer.answer['content']['answer'])
+            answer.answer = json.dumps(answer.answer)
+            background_tasks.add_task(send_poster_to_frontend_server, answer)
+            return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
+        elif answer.status_code == 203:
+            print(answer.answer)
+            background_tasks.add_task(send_acute_to_frontend_server, answer)
             return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})
     except Exception as e:
         raise e
@@ -107,3 +121,6 @@ def send_poster_to_frontend_server(answer: AnswerData):
 
 def send_simple_text_to_frontend_server(answer: AnswerData):
     requests.post(FRONTEND_SERVER_URL+"/kakao/callback-response/simple-text", json=answer.model_dump())
+
+def send_acute_to_frontend_server(answer: AnswerData):
+    requests.post(FRONTEND_SERVER_URL+"/kakao/callback-response/acute", json=answer.model_dump())

@@ -16,7 +16,6 @@ class SubscriptionService:
             return db.query(User).filter(User.subscription != None, User.subscription_date != None).all()
         
     def send_subscription():
-        print("send_subscription")
         with get_db() as db:
             users = SubscriptionService.get_subscribed_users()
             today = date.today()
