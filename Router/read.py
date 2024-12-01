@@ -17,7 +17,7 @@ async def compare_and_generate_tts(request: Request, data: TTSData):
     decoded = AesService.decrypt(data.key)
     if decoded != data.string:
         return JSONResponse(status_code=HTTP_400_BAD_REQUEST, content={"message": "Unauthorized"})
-    
+    decoded = decoded.replace("**", "")
     tts = gTTS(text=decoded, lang='ko')
     tts_io = io.BytesIO()
     tts.write_to_fp(tts_io)

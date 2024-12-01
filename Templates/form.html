@@ -358,7 +358,7 @@
         <h1>성별과 나이를 알려주세요</h1>
         <div class="gender-age">
             <div class="gender-buttons">
-                <button class="gender-button selected" onclick="selectGender('M')">남성</button>
+                <button class="gender-button" onclick="selectGender('M')">남성</button>
                 <button class="gender-button" onclick="selectGender('F')">여성</button>
             </div>
             <input type="number" class="age-input" placeholder="나이" inputmode="numeric" enterkeyhint="done">
@@ -386,7 +386,7 @@
             <div class="frequency-option" onclick="selectFrequency(this, 1)">하루에 한 번</div>
             <div class="frequency-option" onclick="selectFrequency(this, 7)">일주일에 한 번</div>
             <div class="frequency-option" onclick="selectFrequency(this, 30)">한달에 한 번</div>
-            <div class="frequency-option selected" onclick="selectFrequency(this, 0)">받지 않을래요</div>
+            <div class="frequency-option" onclick="selectFrequency(this, 0)">받지 않을래요</div>
         </div>
         <button class="button" onclick="submitForm()">제출하기</button>
     </div>
@@ -542,6 +542,12 @@
                 changeFontSize(savedSize);
             } else {
                 changeFontSize('normal');
+            }
+
+            // Set default frequency selection
+            const defaultFrequencyOption = document.querySelector('.frequency-option');
+            if (defaultFrequencyOption) {
+                selectFrequency(defaultFrequencyOption, 1);
             }
         });
     </script>
