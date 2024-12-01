@@ -16,7 +16,7 @@ class Migrator:
         for sessionId in sessionIds:
             chats = self.get_chat_by_session_id(sessionId)
             chat_history = "".join([str(chat.type) for chat in chats])
-            print("".join([str(chat.type) for chat in chats]))
+            # print("".join([str(chat.type) for chat in chats]))
             matches = self.rule.finditer(chat_history)
             longest_match = max(matches, key=lambda match: match.end() - match.start(), default=None)
             if longest_match:
