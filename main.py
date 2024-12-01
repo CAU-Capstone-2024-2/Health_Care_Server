@@ -62,7 +62,9 @@ from fastapi.requests import Request
 #         content={"message": "You fool bro, this is not the page you are looking for"}
 #     )
 # CORS
-origins = [ FRONTEND_SERVER_URL, AI_SERVER_URL]
+origins = [
+    "*"
+]
 
 app.add_middleware(
     CORSMiddleware,
