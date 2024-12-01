@@ -25,8 +25,12 @@ async def create_form(request: Request):
         uid = data['userRequest']['user']['id']
         if UserService.get_user(uid) is None:
             UserService.save_user(UserService.to_user_entity(uid))
-        form_id = str(uuid.uuid4())
-        form_id = UserService.create_form(uid, form_id)
+        user = UserService.get_user(uid)
+        if user.form_id:
+            form_id = user.form_id
+        else:
+            form_id = str(uuid.uuid4())
+            UserService.create_form(uid, form_id)
         url = BACKEND_SERVER_URL+"/form/submit/"+form_id
         json_form = {
             "version": "2.0",
