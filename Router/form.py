@@ -25,8 +25,12 @@ async def create_form(request: Request):
         uid = data['userRequest']['user']['id']
         if UserService.get_user(uid) is None:
             UserService.save_user(UserService.to_user_entity(uid))
-        form_id = str(uuid.uuid4())
-        form_id = UserService.create_form(uid, form_id)
+        user = UserService.get_user(uid)
+        if user.form_id:
+            form_id = user.form_id
+        else:
+            form_id = str(uuid.uuid4())
+            UserService.create_form(uid, form_id)
         url = BACKEND_SERVER_URL+"/form/submit/"+form_id
         json_form = {
             "version": "2.0",
@@ -61,7 +65,7 @@ async def get_form(request: Request, form_id: str):
     try:
         if UserService.get_form(form_id):
             return templates.TemplateResponse("form.html", {"request": request, "form_id": form_id})
-        return JSONResponse(status_code=HTTP_404_NOT_FOUND, content={"message": "만료된 폼입니다."})
+        return templates.TemplateResponse("form_expired.html", {"request": request})
     except Exception as e:
         raise e
         return JSONResponse(status_code=HTTP_400_BAD_REQUEST, content={"message": str(e)})
@@ -70,7 +74,7 @@ async def get_form(request: Request, form_id: str):
 async def submit_form(request: Request, form_id: str, age: int = Form(...), gender: str = Form(...), disease: str = Form(None), subscription: str = Form(None)):
     try:
         if uid := UserService.get_user_by_form_id(form_id):
-            UserService.remove_form(form_id)
+            # UserService.remove_form(form_id)
             UserService.save_user_info(uid, age, gender, disease, subscription)
             json_form = {
                 "event": {
@@ -86,7 +90,7 @@ async def submit_form(request: Request, form_id: str, age: int = Form(...), gend
             }
             requests.post("https://bot-api.kakao.com/v2/bots/"+BOT_ID+"/talk", json=json_form, headers=header)
             return JSONResponse(status_code=200, content=json_form)
-        return JSONResponse(status_code=HTTP_404_NOT_FOUND, content={"message": "만료된 폼입니다."})
+        return JSONResponse(status_code=HTTP_404_NOT_FOUND, content={"message": "이미 만료된 폼입니다."})
     except Exception as e:
         raise e
         return JSONResponse(status_code=500, content={"message": str(e)})
