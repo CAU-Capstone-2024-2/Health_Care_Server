@@ -13,7 +13,7 @@ REST_API_KEY = os.getenv("REST_API_KEY")
 class SubscriptionService:
     def get_subscribed_users():
         with get_db() as db:
-            return db.query(User).filter(User.subscription != None, User.subscription_date != None).all()
+            return db.query(User).filter(User.subscription != None, User.subscription != 0, User.subscription_date != None).all()
         
     def send_subscription():
         with get_db() as db:
