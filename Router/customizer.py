@@ -45,9 +45,27 @@ async def request_customized_info(request: Request):
             "template": {
                 "outputs": [
                     {
+                        "simpleText": {
+                            "text": "안녕하세요. 좋은 아침입니다. 오늘의 맞춤형 건강 정보가 도착했어요!"
+                        }
+                    },
+                    {
                         "simpleImage": {
                             "imageUrl": img_url,
                             "altText": "주기적으로 전송되는 맞춤형 건강 정보입니다."
+                        }
+                    },
+                    {
+                        "textCard": {
+                        "title": "챗봇 관리자센터에 오신 것을 환영합니다.",
+                        "description": "챗봇 관리자센터로 챗봇을 제작해 보세요. \n카카오톡 채널과 연결하여, 이용자에게 챗봇 서비스를 제공할 수 있습니다.",
+                        "buttons": [
+                            {
+                                "action": "message",
+                                "label": "구독 주기 변경",
+                                "messageText": "설정"
+                            }
+                        ]
                         }
                     }
                 ]
