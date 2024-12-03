@@ -46,7 +46,7 @@ async def request_customized_info(request: Request):
                 "outputs": [
                     {
                         "simpleText": {
-                            "text": "안녕하세요. 좋은 아침입니다. 오늘의 맞춤형 건강 정보가 도착했어요!"
+                            "text": "안녕하세요. 오늘의 맞춤형 건강 정보가 도착했어요!"
                         }
                     },
                     {
