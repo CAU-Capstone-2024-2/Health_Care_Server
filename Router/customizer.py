@@ -57,8 +57,7 @@ async def request_customized_info(request: Request):
                     },
                     {
                         "textCard": {
-                        "title": "챗봇 관리자센터에 오신 것을 환영합니다.",
-                        "description": "챗봇 관리자센터로 챗봇을 제작해 보세요. \n카카오톡 채널과 연결하여, 이용자에게 챗봇 서비스를 제공할 수 있습니다.",
+                        "title": "구독 주기를 변경하시려면 아래 버튼을 눌러주세요.",
                         "buttons": [
                             {
                                 "action": "message",
