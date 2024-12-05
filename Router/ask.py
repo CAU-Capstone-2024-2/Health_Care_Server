@@ -92,7 +92,7 @@ async def answer(request: Request, answer: AnswerData, background_tasks: Backgro
         elif answer.status_code == 202:
             answer.answer = json.loads(answer.answer)
             answer.answer["content"]["definitions"] = extract_definitions(answer.answer['content']['answer'])
-            answer.answer["tts_key"]= AesService.encrypt(answer.answer['content']['answer'])
+            answer.answer["tts_key"]= AesService.sha1(AesService.encrypt(answer.answer['content']['answer']))
             answer.answer = json.dumps(answer.answer)
             background_tasks.add_task(send_poster_to_frontend_server, answer)
             return JSONResponse(status_code=HTTP_200_OK, content={"message": "success"})

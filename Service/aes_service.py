@@ -3,7 +3,7 @@ from Cryptodome.Cipher import AES
 import base64
 import os
 from dotenv import load_dotenv
-
+import hashlib
 
 class AesService:
     load_dotenv(".env")
@@ -15,6 +15,9 @@ class AesService:
         padded_data = pad(data.encode(), AES.block_size)
         encrypted = cipher.encrypt(padded_data)
         return base64.b64encode(AesService.iv + encrypted).decode()
+
+    def sha1(data: str) -> str:
+        return hashlib.sha1(data.encode()).hexdigest()
 
     def decrypt(encrypted_data: str) -> str:
         decoded_data = base64.b64decode(encrypted_data)
